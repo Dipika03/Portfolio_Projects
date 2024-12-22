@@ -9,7 +9,6 @@ which county is most effected by covid in California, which county doing well an
 Below are the different data sources I will use while working on my project.
 - Flat File: Using the HealthData government site to see the count of coronavirus cases, number of deaths in California state by county.
 https://healthdata.gov/browse?tags=hhs+covid-19
-
 Also, I am using the IRS site to get the average income of each county of California.
 https://www.irs.gov/statistics/soi-tax-stats-individual-income-taxstatistics-zip-code-data-soi
 

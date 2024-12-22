@@ -1,0 +1,347 @@
+---
+title: "Final Project"
+author: "Dipika Sharma"
+date: June 5, 2021
+output:
+  
+  pdf_document: default
+  html_document: default
+  word_document: default
+bibliography: bibliography.bib
+---
+
+## Add Citations
+
+* R for Everyone [@lander2014r]
+* Discovering Statistics Using R [@field2012discovering]
+
+## Introduction
+
+For my final project I have analyzed drivers data. As we know Road accidents have become so common these days. We have heard or read about accidents at an average of 1/week. 
+
+```{r include=TRUE}
+bad_drivers <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/bad-drivers/bad-drivers.csv")
+
+```
+
+I have learned about the structure of our data using str function.
+
+```{r include=TRUE}
+str(bad_drivers)
+```
+
+The dataset we are using have 8 different columns for 51 states of United State. I have renamed all the columns to make it simple and readable.
+
+
+```{r message=FALSE, warning=FALSE, include=TRUE}
+
+library(dplyr)
+
+baddrivers_df <- bad_drivers %>% 
+  rename(driver_fatalities = "Number.of.drivers.involved.in.fatal.collisions.per.billion.miles", 
+         speeding_percent = "Percentage.Of.Drivers.Involved.In.Fatal.Collisions.Who.Were.Speeding", 
+         alcohol_percent = "Percentage.Of.Drivers.Involved.In.Fatal.Collisions.Who.Were.Alcohol.Impaired", 
+         not_distracted_percent = "Percentage.Of.Drivers.Involved.In.Fatal.Collisions.Who.Were.Not.Distracted", 
+         no_prior_accident_percent = "Percentage.Of.Drivers.Involved.In.Fatal.Collisions.Who.Had.Not.Been.Involved.In.Any.Previous.Accidents", 
+         insurance_premiums = "Car.Insurance.Premiums....", 
+         insurance_companies_losses = "Losses.incurred.by.insurance.companies.for.collisions.per.insured.driver....")
+ 
+str(baddrivers_df)
+
+```
+
+The final data looks like below:
+
+```{r include=TRUE}
+
+head(baddrivers_df)
+
+tail(baddrivers_df)
+
+```
+
+
+Lets get the state region data. I found the state region data set in kaggle https://www.kaggle.com/omer2040/usa-states-to-region which i am using to see which region has worst drivers in United States.
+
+
+```{r include=TRUE}
+
+## Set the working directory to the root of your DSC 520 directory
+setwd("/Users/dipikasharma/R_Projects/DSC520")
+
+## Load the `data/states.csv` to
+states_df <- read.csv("data/states.csv")
+
+```
+
+
+Lets join the bad drivers data with states dataframe to get the region.
+
+
+```{r include=TRUE}
+
+bad_drivers_df <- merge(x=baddrivers_df,y=states_df,by="State",all.x=TRUE)
+str(bad_drivers_df)
+
+```
+
+
+As we can see now the data set structure has 51 observation of 11 variables.
+
+
+## The problem statement you addressed. 
+
+My purpose of analyzing the drivers data to find out Which states has the worst drivers in United States? Is number of accidents and premium are related to each other? I have studied How the premiums getting effected by increase rate of accidents? Which state has high and low premium in United States? Apart from that I have also added the region information in our data set to see which region in United States has worst drivers.
+
+
+## How you addressed this problem statement
+
+```{r include=TRUE}
+
+summary(bad_drivers_df)
+
+```
+
+
+We already learned about the data structure and have gained the little idea of drivers data frame using str, head and tail function. In order to get a better idea of the distribution of your variables in the dataset I have used summary function to know about the descriptive statistic of each variable in data set. As we can see summary function telling us about the mean, median or range of the numerical variables. I can use appropriate plots with correct range.
+
+My plan is to use the different plots like state vs Number of fatal collision plot which will give me understanding about which state has most collision and which has minimum collision for every billion miles traveled.
+
+Once i learned about the fatal collision, I want to see which states in United States has high insurance premium. It will give my knowledge How car insurance premium works in different states?
+
+Since we added the region data in our final data set, it would be interesting to see which region has most fatal collision.
+
+After gaining knowledge about the fatal collision and Insurance premium in different states, my priority shift to understand if there is a any relationship between the two for which i will use plots to see the distribution of driver_fatalities and Car Insurance Premium.
+
+I am planning to see the fatal collision relationship with region, alcohol percent, and Insurance company losses.
+
+To have better understanding about the premium i am planning to plot Insurance company losses to see which states has high losses in United states.
+
+Lastly I want to see which region has most speeding ticket and drivers with alcohol percent.
+
+
+## Analysis
+
+## state vs Number of fatal collision
+
+
+I have analyzed the first plot state vs Number of fatal collision which gave me the states with maximum collision North Dakota and South Carolina with fatal collision of 23.9 and state with less collision District of Columbia with collision of 5.9 for every billion miles traveled.
+
+
+```{r include=TRUE}
+
+library(ggplot2)
+ggplot(bad_drivers_df,aes(x=reorder(State,- driver_fatalities), 
+                          y = driver_fatalities, fill=State) )+
+  geom_bar(stat = "identity")+
+  xlab("States")+
+  ylab("Number of Collisions")+
+  ggtitle("Number of fatal collisions in each state")+
+  guides(fill = FALSE) +
+  theme(axis.text.x=element_text(angle=90,hjust=0.2,vjust=0.2))
+
+```
+
+
+
+```{r include=TRUE}
+
+summary(bad_drivers_df$driver_fatalities)
+
+```
+
+
+I have used the summary function to find out the average of driver fatalities and found that the fatal collision count in state North Dakota and South Carolina is higher then the average collision.
+
+## State vs car Insurance Premium
+
+Used the ggplot to see Car Insurance premium of all 51 states of United State.It gave me understanding about How car insurance premium works in different states? Idaho state has less car insurance premium of 642 where as the New Jersey state has highest car insurance premium 1301.5.
+
+
+```{r include=TRUE}
+
+bad_drivers_df %>% ggplot(aes(x=reorder(State, -`insurance_premiums`), 
+                              y=`insurance_premiums`, fill=State)) + 
+  geom_bar(stat = "identity") + 
+  guides(fill = FALSE) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+```
+
+
+```{r include=TRUE}
+
+summary(bad_drivers_df$insurance_premiums)
+
+```
+
+
+New Jersey state has car insurance premium is higher then the average of 859.
+
+
+## Distribution of driver_fatalities and Car Insurance Premium.
+
+## Histogram of Driver Fatalities
+
+
+```{r include=TRUE}
+
+hist(bad_drivers_df$driver_fatalities)
+
+```
+
+## Histogram of Insurance preimum
+
+With the help of histogram I found that District of Columbia is an outlier with less number of collision and the model distribution is bi-model and slightly left skewed. 
+
+
+```{r include=TRUE}
+
+hist(bad_drivers_df$insurance_premiums)
+
+```
+
+
+Whereas the the distribution of car insurance premium is skewed right and unimodal.
+
+
+## State vs Insurance company losses
+
+Using below plot we found that Louisiana state has most expensive losses incurred by insurance company of 194.78 where as Idaho state has less losses incurred by insurance company of 82.75. 
+
+
+```{r include=TRUE}
+
+ggplot(bad_drivers_df,aes(x=reorder(State,- insurance_companies_losses), 
+                          y= insurance_companies_losses, fill=State) )+
+  geom_bar(stat = "identity")+
+  xlab("States")+
+  ylab("Amount")+
+  ggtitle("Loss Incurred by Insurance Company")+
+  guides(fill = FALSE) +
+  theme(axis.text.x=element_text(angle=90,hjust=0.2,vjust=0.2))
+
+```
+
+
+```{r include=TRUE}
+
+summary(bad_drivers_df$insurance_companies_losses)
+
+```
+
+
+Louisiana state has losses incurred by insurance company of 194.78 which is more than the average losses incurred of 136.05.
+
+## Driver Fatalities by Region
+
+I am using the boxplot to see how the data spread out from the center.
+
+
+```{r include=TRUE}
+
+ggplot(bad_drivers_df, aes(x = Region, y = driver_fatalities, fill = Region)) + 
+  geom_boxplot() + 
+  labs(x = "Region", y = "Driver Fatalities", 
+       title = "Region vs. Driver Fatalities", 
+       fill = "")
+
+```
+
+
+We can clearly stat that the southern region has the highes median compare to Midwest, west and Northeast.
+
+## Relationship between Fatal Collision and Insurance Premium
+
+I used Linear Regression model to understand the relationship between the fatal collision and insurance premium. I concluded from this model that driver collision is strongly associated with Car insurance premium as they showing low p value. Driver fatalities estimate value is -8.638 which show how it Car Insurance related and how much car Insurance will get effected with fatal collision.
+
+
+```{r include=TRUE}
+
+lm_df <- lm(formula = insurance_premiums ~ driver_fatalities , 
+            data = bad_drivers_df)
+summary(lm_df)
+
+```
+
+
+## Fata Collision and Insurance premium by Region
+
+We can also use scatterplot to understand the relationship between the fatal collision and Insurance premium. Here I am using the region to see the relationship based on region.
+
+
+```{r message=FALSE, warning=FALSE, include=TRUE}
+
+ggplot(bad_drivers_df, aes(x = driver_fatalities, 
+                           y = insurance_premiums, col = Region)) + 
+  geom_jitter(alpha = 0.8) + geom_smooth(method = "lm") + 
+  facet_grid(. ~ Region) + 
+  labs(x = "Driver Fatalities", y = "Insurance Premiums", 
+       title = "Driver Fatalities vs. Insurance Premiums", 
+       col = "")
+
+```
+
+
+We can see from above plot that South and Northeast has the highest Car Insurance premium and fatal collision are negatively related to Insurance premium in Midwest, Northeast and South. Both variables has the positive relation only in West region.
+
+
+## Fatal collision with region, alcohol percent, and Insurance company losses Model
+
+Let build a model to see relationship between fatal collision with region, alcohol percent, and Insurance company losses.
+
+```{r include=TRUE}
+
+model <- lm(driver_fatalities ~ Region + alcohol_percent + 
+              insurance_companies_losses, data = bad_drivers_df)
+
+summary(model)
+
+```
+
+
+we can clearly stat that region south with 4.33 estimate has major impact on driver fatalities where as region northeast has least impact on driver fatalities indicating that this region has good drivers compare to south region of united states.
+
+
+## Speeding percent by Region
+
+
+I have also analyzed the speeding percent in each region and found that South and West region has more rate of getting speeding ticket compare to other region.
+
+
+```{r include=TRUE}
+
+ggplot(bad_drivers_df, aes(x = speeding_percent)) + 
+  geom_histogram(binwidth = 4) + facet_grid(. ~ Region)
+
+```
+
+
+## Alcohol Percent by Region
+
+Lets learn about which region has the drivers with alcohol percent.
+
+
+```{r include=TRUE}
+
+ggplot(bad_drivers_df, aes(x = alcohol_percent)) + 
+  geom_histogram(binwidth = 4) + facet_grid(. ~ Region)
+
+```
+
+
+As we can see the south region has most drivers with alcohol percent.
+
+## Implications
+
+After analyzing the different cases above we can state that there is a relationship between Car Insurance and fatal collision. Idaho state has the good drivers with low Car Insurance premium, also the losses incurred by Insurance company is also low in Idaho compare to all other state. Where as North Dakota, South Carolina, New jersey and Louisiana has worst drivers in United State. Overall if we look the data via region we have found that the South region has worst drivers in United States where as NorthEast region has good drivers.
+
+## Limitations
+
+Using the current data set we cannot say anything about the road condition of each state. Also there is no evident about the weather condition when collision happened. These two factors plays important role when comes to road accident as they can also be the reason of collision and if so in that case we cannot say drivers are bad.
+
+## Concluding Remarks
+
+I have analyzed driver_fatalities, insurance_premiums and insurance_companies_losses, region variables of data set.Along with that I have visualized the data to see the number of car crashes in each state, the insurance premiums in each state, fatal collision in each region, Relationship between Car Insurance Premium and fatal collision, how much insurance company pay out?, speeding percent in each region and lastly the drivers with alcohol percent in all region. After learning about all we can conclude that we have good drivers in Idaho as its Car Insurance premium is low , also the losses incurred by Insurance company is also low compare to all other state. On the other hand North Dakota, South Carolina, New jersey and Louisiana states has worst drivers in United State. Overall we can say that South region has the worst drivers in United States.
+
+## References

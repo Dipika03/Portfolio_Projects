@@ -1,1 +1,19 @@
+# Song Recommender System
 
+### Description
+- Using the machine learning to suggest the songs to the users that they might like, this system is called song recommender. 
+- As part of this project, I chose the dataset of track records. 
+- Using this analysis, we will recommend songs to users.
+
+### Goal:
+- Song recommender system will go through the user’s history and create a list of songs as per their preferences. 
+- The intend of this system is to make users familiar with some new songs and album to improve user experience. 
+- This system will help business owners to grow their income as this system will encourage users to make more purchases by recommending music tracks based on their earlier purchase.
+
+
+### Methodology: Algorithm
+- Cosine Similarity
+
+### Conclusion
+- Built model is working.
+- Results are encouraging.
